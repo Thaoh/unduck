@@ -140,7 +140,7 @@ const createTemplate = (data: {
 				}
 		</div>
 		<footer class="footer">
-			made with ♥ by <a href="https://github.com/taciturnaxolotl" target="_blank">Kieran Klukas</a> as <a href="https://github.com/taciturnaxolotl/unduck" target="_blank">open source</a> software
+			made with ♥ by <a href="https://github.com/taciturnaxolotl" target="_blank">Kieran Klukas</a> as <a href="https://github.com/taciturnaxolotl/unduck" target="_blank">open source</a> software | modified by <a href="https://github.com/thaoh" target="_blank">Thaoh</a> 🚀
 		</footer>
 		<div class="modal" id="settings-modal">
 			<div class="modal-content">
