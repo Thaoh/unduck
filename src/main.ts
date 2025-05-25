@@ -208,12 +208,9 @@ const createTemplate = (data: {
 `;
 
 function noSearchDefaultPageRender() {
-	const searchCount =
-		storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.SEARCH_COUNT) || "0";
-	const historyEnabled =
-		storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.HISTORY_ENABLED) === "true";
 	const searchCount = storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.SEARCH_COUNT) || "0";
 	const historyEnabled = storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.HISTORY_ENABLED) === "true";
+	const audioEnabled = storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.AUDIO_ENABLED) === "true";
 	const searchHistory = getSearchHistory();
 	const app = document.querySelector<HTMLDivElement>("#app");
 	if (!app) throw new Error("App element not found");
