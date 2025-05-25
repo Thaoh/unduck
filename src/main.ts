@@ -212,6 +212,8 @@ function noSearchDefaultPageRender() {
 		storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.SEARCH_COUNT) || "0";
 	const historyEnabled =
 		storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.HISTORY_ENABLED) === "true";
+	const searchCount = storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.SEARCH_COUNT) || "0";
+	const historyEnabled = storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.HISTORY_ENABLED) === "true";
 	const searchHistory = getSearchHistory();
 	const app = document.querySelector<HTMLDivElement>("#app");
 	if (!app) throw new Error("App element not found");
@@ -504,8 +506,7 @@ function noSearchDefaultPageRender() {
 	});
 }
 
-const LS_DEFAULT_BANG =
-	storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.DEFAULT_BANG) ?? "ddg";
+const LS_DEFAULT_BANG = storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.DEFAULT_BANG) ?? "ddg";
 const defaultBang = bangs[LS_DEFAULT_BANG];
 
 function ensureProtocol(url: string, defaultProtocol = "https://") {
