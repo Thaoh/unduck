@@ -20,6 +20,7 @@ export const CONSTANTS = {
 	LOCAL_STORAGE_KEYS: {
 		SEARCH_HISTORY: "search-history",
 		SEARCH_COUNT: "search-count",
+		AUDIO_ENABLED: "audio-enabled",
 		HISTORY_ENABLED: "history-enabled",
 		DEFAULT_BANG: "default-bang",
 		CUSTOM_BANGS: "custom-bangs",
@@ -79,6 +80,7 @@ function setOutsideElementsTabindex(modal: HTMLElement, tabindex: number) {
 
 const createTemplate = (data: {
 	searchCount: string;
+	audioEnabled: boolean;
 	historyEnabled: boolean;
 	searchHistory: Array<{
 		bang: string;
@@ -191,6 +193,16 @@ const createTemplate = (data: {
 							</div>
 					</div>
 					<div class="settings-section">
+							<h3>Audio Settings</h3>
+							<div style="display: flex; justify-content: space-between; align-items: center;">
+								<label class="switch">
+										<label for="audio-toggle">Enable Audio</label>
+										<input type="checkbox" id="audio-toggle" ${data.audioEnabled ? "checked" : ""}>
+										<span class="slider round"></span>
+									</label>
+							</div>
+					</div>
+					<div class="settings-section">
 							<h3>Search History (${data.searchHistory.length}/500)</h3>
 							<div style="display: flex; justify-content: space-between; align-items: center;">
 								<label class="switch">
@@ -207,6 +219,18 @@ const createTemplate = (data: {
 	</div>
 `;
 
+
+const isAudioEnabled = () => {
+	return storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.AUDIO_ENABLED) === "true";
+};
+
+function playAudioWhenEnabled(audioObject: { play: () => void; } | undefined) {
+	if ( !isAudioEnabled() ) return;
+	if ( !audioObject ) return;
+
+	audioObject.play();
+}
+
 function noSearchDefaultPageRender() {
 	const searchCount = storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.SEARCH_COUNT) || "0";
 	const historyEnabled = storage.get(CONSTANTS.LOCAL_STORAGE_KEYS.HISTORY_ENABLED) === "true";
@@ -217,6 +241,7 @@ function noSearchDefaultPageRender() {
 
 	app.innerHTML = createTemplate({
 		searchCount,
+		audioEnabled,
 		historyEnabled,
 		searchHistory,
 		LS_DEFAULT_BANG,
@@ -234,6 +259,7 @@ function noSearchDefaultPageRender() {
 		closeModal: app.querySelector<HTMLSpanElement>(".close-modal"),
 		defaultBangSelect: app.querySelector<HTMLSelectElement>("#default-bang"),
 		description: app.querySelector<HTMLParagraphElement>("#bang-description"),
+		audioToggle: app.querySelector<HTMLInputElement>("#audio-toggle"),
 		historyToggle: app.querySelector<HTMLInputElement>("#history-toggle"),
 		clearHistory: app.querySelector<HTMLButtonElement>(".clear-history"),
 		bangName: app.querySelector<HTMLInputElement>(".bang-name"),
@@ -305,15 +331,15 @@ function noSearchDefaultPageRender() {
 
 		validatedElements.copyButton.addEventListener("click", () => {
 			audio.copy.currentTime = 0;
-			audio.copy.play();
+			playAudioWhenEnabled(audio.copy);
 		});
 
 		validatedElements.settingsButton.addEventListener("mouseenter", () => {
-			audio.spin.play();
+			playAudioWhenEnabled(audio.spin);
 		});
 
 		validatedElements.settingsButton.addEventListener("mouseleave", () => {
-			audio.spin.pause();
+			playAudioWhenEnabled(audio.spin);
 			audio.spin.currentTime = 0;
 		});
 
@@ -322,34 +348,35 @@ function noSearchDefaultPageRender() {
 				audio.toggleOff.pause();
 				audio.toggleOff.currentTime = 0;
 				audio.toggleOn.currentTime = 0;
-				audio.toggleOn.play();
+				playAudioWhenEnabled(audio.toggleOn);
 			} else {
 				audio.toggleOn.pause();
 				audio.toggleOn.currentTime = 0;
 				audio.toggleOff.currentTime = 0;
-				audio.toggleOff.play();
+				playAudioWhenEnabled(audio.toggleOff);
 			}
 		});
 
 		validatedElements.clearHistory.addEventListener("click", () => {
-			audio.warning.play();
+			playAudioWhenEnabled(audio.warning);
 		});
 
 		validatedElements.defaultBangSelect.addEventListener("bangError", () => {
 			audio.warning.currentTime = 0;
-			audio.warning.play();
+			playAudioWhenEnabled(audio.warning);
 		});
 
 		validatedElements.defaultBangSelect.addEventListener("bangSuccess", () => {
 			audio.click.currentTime = 0;
-			audio.click.play();
+			playAudioWhenEnabled(audio.click);
 		});
 
 		validatedElements.closeModal.addEventListener("closed", () => {
 			validatedElements.settingsButton.classList.remove("rotate");
 			audio.spin.playbackRate = 0.7;
 			audio.spin.currentTime = 0;
-			audio.spin.play();
+			playAudioWhenEnabled(audio.spin);
+
 			audio.spin.onended = () => {
 				audio.spin.playbackRate = 1;
 			};
@@ -358,13 +385,13 @@ function noSearchDefaultPageRender() {
 		validatedElements.addBang.addEventListener("click", () => {
 			audio.click.currentTime = 0.1;
 			audio.click.playbackRate = 2;
-			audio.click.play();
+			playAudioWhenEnabled(audio.click);
 		});
 
 		validatedElements.removeBangs.forEach((button) => {
 			button.addEventListener("click", () => {
 				audio.warning.currentTime = 0;
-				audio.warning.play();
+				playAudioWhenEnabled(audio.warning);
 			});
 		});
 	}
@@ -442,6 +469,13 @@ function noSearchDefaultPageRender() {
 	validatedElements.historyToggle.addEventListener("change", (event) => {
 		storage.set(
 			CONSTANTS.LOCAL_STORAGE_KEYS.HISTORY_ENABLED,
+			(event.target as HTMLInputElement).checked.toString(),
+		);
+	});
+
+	validatedElements.audioToggle.addEventListener("change", (event) => {
+		storage.set(
+			CONSTANTS.LOCAL_STORAGE_KEYS.AUDIO_ENABLED,
 			(event.target as HTMLInputElement).checked.toString(),
 		);
 	});
