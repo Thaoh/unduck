@@ -1,5 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="1200pt" height="1200pt" version="1.1" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
- <rect width="1200" height="1200" fill="black"/>
- <path fill="white" d="m980.48 905.76-198.84-199.08c89.203-125.34 77.953-300.14-34.406-412.64-125.26-125.44-328.03-125.44-453.32 0-125.26 125.44-125.26 328.45 0 453.84 112.36 112.5 286.97 123.74 412.18 34.406l198.84 199.08c53.25 53.297 132.05-19.078 75.562-75.609zm-610.87-233.58c-83.391-83.531-83.391-218.86 0-302.39s218.58-83.531 302.02 0c83.391 83.531 83.391 218.86 0 302.39-83.438 83.484-218.63 83.484-302.02 0z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Pro 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2025 Fonticons, Inc.--><path class="fa-secondary" opacity=".4" d="M208 80a128 128 0 1 1 -90.5 37.5A127.2 127.2 0 0 1 208 80m0-80C93.1 0 0 93.1 0 208s93.1 208 208 208 208-93.1 208-208S322.9 0 208 0z"/><path class="fa-primary" d="M504.9 476.7L476.6 505a23.9 23.9 0 0 1 -33.9 0L343 405.3a24 24 0 0 1 -7-17V372l36-36h16.3a24 24 0 0 1 17 7l99.7 99.7a24.1 24.1 0 0 1 -.1 34z"/></svg>
