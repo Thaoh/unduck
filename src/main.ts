@@ -54,27 +54,6 @@ const customBangs: {
 	).map(([k, v]) => [k.toLowerCase(), v]),
 );
 
-function getFocusableElements(
-	root: HTMLElement = document.body,
-): HTMLElement[] {
-	return Array.from(
-		root.querySelectorAll<HTMLElement>(
-			'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
-		),
-	);
-}
-
-function setOutsideElementsTabindex(modal: HTMLElement, tabindex: number) {
-	const modalElements = getFocusableElements(modal);
-	const allElements = getFocusableElements();
-
-	for (const element of allElements) {
-		if (!modalElements.includes(element)) {
-			element.setAttribute("tabindex", tabindex.toString());
-		}
-	}
-}
-
 const createTemplate = (data: {
 	searchCount: string;
 	audioEnabled: boolean;
@@ -139,9 +118,9 @@ const createTemplate = (data: {
 		<footer class="footer">
 			made with ♥ by <a href="https://github.com/taciturnaxolotl" target="_blank">Kieran Klukas</a> as <a href="https://github.com/taciturnaxolotl/unduck" target="_blank">open source</a> software | modified by <a href="https://github.com/thaoh" target="_blank">Thaoh</a> 🚀
 		</footer>
-		<div class="modal" id="settings-modal">
+		<dialog class="modal" id="settings-modal">
 			<div class="modal-content">
-					<button class="close-modal">&times;</button>
+					<button type="button" class="close-modal" aria-label="Close settings">&times;</button>
 					<h2>Settings</h2>
 					<div class="settings-section">
 					    <h3>Bangs</h3>
@@ -224,9 +203,8 @@ const createTemplate = (data: {
 								<input type="file" id="import-file" accept=".json" style="display: none;">
 							</div>
 					</div>
-				</div>
 			</div>
-		</div>
+		</dialog>
 	</div>
 `;
 
@@ -266,8 +244,8 @@ function noSearchDefaultPageRender() {
 		copyIcon: app.querySelector<HTMLImageElement>(".copy-button img"),
 		urlInput: app.querySelector<HTMLInputElement>(".url-input"),
 		settingsButton: app.querySelector<HTMLButtonElement>(".settings-button"),
-		modal: app.querySelector<HTMLDivElement>("#settings-modal"),
-		closeModal: app.querySelector<HTMLSpanElement>(".close-modal"),
+		modal: app.querySelector<HTMLDialogElement>("#settings-modal"),
+		closeModal: app.querySelector<HTMLButtonElement>(".close-modal"),
 		defaultBangSelect: app.querySelector<HTMLSelectElement>("#default-bang"),
 		description: app.querySelector<HTMLParagraphElement>("#bang-description"),
 		audioToggle: app.querySelector<HTMLInputElement>("#audio-toggle"),
@@ -387,8 +365,7 @@ function noSearchDefaultPageRender() {
 			playAudioWhenEnabled(audio.click);
 		});
 
-		validatedElements.closeModal.addEventListener("closed", () => {
-			validatedElements.settingsButton.classList.remove("rotate");
+		validatedElements.modal.addEventListener("close", () => {
 			audio.spin.playbackRate = 0.7;
 			audio.spin.currentTime = 0;
 			playAudioWhenEnabled(audio.spin);
@@ -427,24 +404,38 @@ function noSearchDefaultPageRender() {
 
 	validatedElements.settingsButton.addEventListener("click", () => {
 		validatedElements.settingsButton.classList.add("rotate");
-		validatedElements.modal.style.display = "block";
-		setOutsideElementsTabindex(validatedElements.modal, -1);
+		validatedElements.modal.showModal();
+	});
+
+	let backdropPointerDown = false;
+	validatedElements.modal.addEventListener("mousedown", (e) => {
+		backdropPointerDown = e.target === validatedElements.modal;
+		if (backdropPointerDown) {
+			document.addEventListener(
+				"mouseup",
+				() => {
+					backdropPointerDown = false;
+				},
+				{ once: true },
+			);
+		}
+	});
+	validatedElements.modal.addEventListener("mouseup", (e) => {
+		if (backdropPointerDown && e.target === validatedElements.modal) {
+			validatedElements.modal.close();
+		}
+		backdropPointerDown = false;
+	});
+	validatedElements.modal.addEventListener("mouseleave", () => {
+		backdropPointerDown = false;
 	});
 
 	validatedElements.closeModal.addEventListener("click", () => {
-		validatedElements.closeModal.dispatchEvent(new Event("closed"));
+		validatedElements.modal.close();
 	});
 
-	window.addEventListener("click", (event) => {
-		if (event.target === validatedElements.modal) {
-			validatedElements.closeModal.dispatchEvent(new Event("closed"));
-		}
-	});
-
-	validatedElements.closeModal.addEventListener("closed", () => {
-		validatedElements.modal.style.display = "none";
-		setOutsideElementsTabindex(validatedElements.modal, 0);
-
+	validatedElements.modal.addEventListener("close", () => {
+		validatedElements.settingsButton.classList.remove("rotate");
 		if (validatedElements.historyToggle.checked !== historyEnabled)
 			if (!prefersReducedMotion)
 				setTimeout(() => {
