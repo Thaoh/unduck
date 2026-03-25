@@ -1,14 +1,13 @@
 {
 	"name": "bangin-search",
-	"version": "0.3.1",
+	"version": "0.1.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
 		"dev": "bunx --bun vite",
 		"build": "bunx --bun vite build",
 		"preview": "bunx --bun vite preview",
-		"hash": "bun run src/bangs/hashbanggen.ts",
-		"check": "bun run src/bangs/test-bangs.ts"
+		"hash": "bun run src/bangs/hashbanggen.ts"
 	},
 	"devDependencies": {
 		"@types/bun": "^1.3.0",

@@ -17,7 +17,8 @@ const hashbang: Record<string, RuntimeBang> = {
 		u: "https://www.t3.chat/new?q={{{s}}}",
 	},
 	t3b: {
-		t: "t3b",
+		d: "beta.t3.chat",
+		s: "T3 Chat Beta",
 		u: "https://beta.t3.chat/new?q={{{s}}}",
 	},
 	m2: {

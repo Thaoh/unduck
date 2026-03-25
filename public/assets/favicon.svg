@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+	<defs>
+		<filter id="ember">
+			<feGaussianBlur stdDeviation="2" result="glow"/>
+			<feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+		</filter>
+	</defs>
+	<rect width="32" height="32" rx="4" fill="#0d0b08"/>
+	<rect x="4" y="4" width="24" height="24" rx="2" fill="none" stroke="#2e2a25" stroke-width="1"/>
+	<rect x="12" y="5" width="8" height="16" rx="2" fill="#f0b429" filter="url(#ember)"/>
+	<rect x="12" y="24" width="8" height="5" rx="2" fill="#d4920c" filter="url(#ember)"/>
+</svg>
