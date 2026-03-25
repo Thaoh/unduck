@@ -1,8 +1,5 @@
 import rawBangs from "./bangs.json" with { type: "json" };
 
-// Developer script that converts ./bangs.json array to hashmap.
-// Only keeps fields needed at runtime: d (domain), ad (alt domain), s (name), u (url)
-
 type RuntimeBang = {
 	d: string;
 	ad?: string;
@@ -118,29 +115,45 @@ const hashbang: Record<string, RuntimeBang> = {
 	},
 };
 
-rawBangs.forEach((bang: any) => {
+for (const bang of rawBangs as any[]) {
 	if (!bang.t || !bang.u || !bang.s || !bang.d) {
 		console.warn(`Skipping invalid bang: ${JSON.stringify(bang)}`);
-		return;
+		continue;
 	}
 
-	const entry: RuntimeBang = {
-		d: bang.d,
-		s: bang.s,
-		u: bang.u,
-	};
+	const entry: RuntimeBang = { d: bang.d, s: bang.s, u: bang.u };
 	if (bang.ad) entry.ad = bang.ad;
 
 	hashbang[bang.t] = entry;
 
 	if (bang.ts) {
-		bang.ts.forEach((trigger: string) => {
+		for (const trigger of bang.ts as string[]) {
 			hashbang[trigger] = entry;
-		});
+		}
 	}
-});
+}
 
-Bun.write(
-	"./src/bangs/hashbang.ts",
-	`export const bangs: Record<string, { d: string; ad?: string; s: string; u: string }> = ${JSON.stringify(hashbang)};`,
-);
+// Deduplicate: entries with identical data become aliases to the first occurrence
+const seen = new Map<string, string>();
+const primaries: Record<string, RuntimeBang> = {};
+const aliases: Record<string, string> = {};
+
+for (const [key, value] of Object.entries(hashbang)) {
+	const json = JSON.stringify(value);
+	const existing = seen.get(json);
+	if (existing) {
+		aliases[key] = existing;
+	} else {
+		seen.set(json, key);
+		primaries[key] = value;
+	}
+}
+
+const uniqueCount = Object.keys(primaries).length;
+const aliasCount = Object.keys(aliases).length;
+console.log(`${uniqueCount} unique entries, ${aliasCount} aliases, ${uniqueCount + aliasCount} total`);
+
+const type = "Record<string, {d:string;ad?:string;s:string;u:string}>";
+const output = `const _d:${type}=${JSON.stringify(primaries)};const _a:Record<string,string>=${JSON.stringify(aliases)};for(const k in _a)_d[k]=_d[_a[k]];export const bangs=_d;`;
+
+Bun.write("./src/bangs/hashbang.ts", output);
